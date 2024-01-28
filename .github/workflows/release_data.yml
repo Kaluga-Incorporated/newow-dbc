@@ -39,7 +39,7 @@ jobs:
             Changes in this release:
             - Added newow-client-data.zip
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.SECRET_TOKEN }}
 
       - name: Upload Artifact
         id: upload-artifact
