@@ -1,0 +1,47 @@
+name: Create Release on Zip Push
+
+on:
+  push:
+    paths:
+      - 'newow-client-data.zip'
+
+jobs:
+  create_release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install Git LFS
+        run: |
+          sudo apt-get install git-lfs
+          git lfs install
+
+      - name: Set up Git
+        run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+
+      - name: Get latest tag
+        id: get_latest_tag
+        run: echo ::set-output name=TAG::$(git describe --tags $(git rev-list --tags --max-count=1))
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ steps.get_latest_tag.outputs.TAG }}
+          release_name: Release ${{ steps.get_latest_tag.outputs.TAG }}
+          body: |
+            Changes in this release:
+            - Added newow-client-data.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Artifact
+        id: upload-artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: newow-client-data
+          path: newow-client-data.zip
