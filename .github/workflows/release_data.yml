@@ -35,10 +35,6 @@ jobs:
         run: |
           zip -r dbc_${{ steps.get_latest_tag.outputs.TAG }}.zip dbc
 
-      - name: Install AWS CLI
-        run: |
-          sudo apt-get install -y awscli
-
       - name: Configure AWS CLI
         run: |
           aws configure set aws_access_key_id ${{ secrets.CLOUD_ACCESS_KEY_ID }}
