@@ -43,4 +43,4 @@ jobs:
 
       - name: Upload dbc zip to S3
         run: |
-          aws s3 cp --endpoint-url=${{ vars.CLOUD_URL }} dbc_${{ steps.get_latest_tag.outputs.TAG }}.zip s3://${{ vars.S3_BUCKET_NAME }}/dbc
+          aws s3 cp --endpoint-url=${{ vars.CLOUD_URL }} dbc_${{ steps.get_latest_tag.outputs.TAG }}.zip s3://${{ vars.S3_BUCKET_NAME }}/dbc/
