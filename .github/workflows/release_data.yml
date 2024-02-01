@@ -2,9 +2,8 @@ name: Create Release on Zip Push
 
 on:
   push:
-    branches:
-      - master
-
+    tags:
+      - '**'
   workflow_dispatch:
 
 
