@@ -2,8 +2,8 @@ name: Create Release on Zip Push
 
 on:
   push:
-    paths:
-      - 'newow-client-data.zip'
+    tags:
+      - '**'
   workflow_dispatch:
 
 
@@ -14,16 +14,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-
-      - name: Install Git LFS
-        run: |
-          sudo apt-get install git-lfs
-          git lfs install
-
-      - name: Set up Git
-        run: |
-          git config --local user.email "actions@github.com"
-          git config --local user.name "GitHub Actions"
 
       - name: Get latest tag
         id: get_latest_tag
@@ -37,13 +27,20 @@ jobs:
           release_name: Release ${{ steps.get_latest_tag.outputs.TAG }}
           body: |
             Changes in this release:
-            - Added newow-client-data.zip
+            - Added update DBC files
         env:
           GITHUB_TOKEN: ${{ secrets.SECRET_TOKEN }}
 
-      - name: Upload Artifact
-        id: upload-artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: newow-client-data
-          path: newow-client-data.zip
+      - name: Collect dbc folder to zip
+        run: |
+          zip -r dbc_${{ steps.get_latest_tag.outputs.TAG }}.zip dbc
+
+      - name: Configure AWS CLI
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.CLOUD_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.CLOUD_SECRET_ACCESS_KEY }}
+          aws configure set region ${{ secrets.CLOUD_REGION }}
+
+      - name: Upload dbc zip to S3
+        run: |
+          aws s3 cp --endpoint-url=${{ vars.CLOUD_URL }} dbc_${{ steps.get_latest_tag.outputs.TAG }}.zip s3://${{ vars.S3_BUCKET_NAME }}/dbc/
